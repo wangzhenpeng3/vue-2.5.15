@@ -32,6 +32,10 @@ export function toggleObserving (value: boolean) {
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
  */
+/**
+ * 创建观察者
+ *
+ */
 export class Observer {
   value: any;
   dep: Dep;
@@ -41,6 +45,11 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    /**
+     * 往data中添加新的属性_ob_,
+     * 并且该属性值为 {value: data, dep: new Dep(), vmCount: 0} dep能访问到实例化的Dep所有成员.
+     * _ob_能访问Observer所有属性及方法,并且_ob_是不能被枚举的.
+     */
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       const augment = hasProto
@@ -138,20 +147,20 @@ export function defineReactive (
 ) {
   const dep = new Dep()
 
-  const property = Object.getOwnPropertyDescriptor(obj, key)
-  if (property && property.configurable === false) {
+  const property = Object.getOwnPropertyDescriptor(obj, key) // 获取data中的属性的描述符,此时的obj = {msg: 'hello', _ob_: Observe}
+  if (property && property.configurable === false) { // data中的msg的属性值是否可以本改变.
     return
   }
 
   // cater for pre-defined getter/setters
   const getter = property && property.get
   if (!getter && arguments.length === 2) {
-    val = obj[key]
+    val = obj[key] // 获取属性值 hello Vue
   }
   const setter = property && property.set
 
-  let childOb = !shallow && observe(val)
-  Object.defineProperty(obj, key, {
+  let childOb = !shallow && observe(val) // 处理data中的属性值为object，在次执行observe
+  Object.defineProperty(obj, key, { // Help 没看懂
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {

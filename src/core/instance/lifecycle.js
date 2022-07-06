@@ -23,7 +23,7 @@ export let isUpdatingChildComponent: boolean = false
 
 export function initLifecycle (vm: Component) {
   const options = vm.$options
-
+  // debugger
   // locate first non-abstract parent
   let parent = options.parent
   if (parent && !options.abstract) {
@@ -319,6 +319,7 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
+  debugger
   const handlers = vm.$options[hook]
   if (handlers) {
     for (let i = 0, j = handlers.length; i < j; i++) {

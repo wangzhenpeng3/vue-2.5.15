@@ -34,20 +34,39 @@ const sharedPropertyDefinition = {
   get: noop,
   set: noop
 }
-
+/**
+ *
+ * @param {Vue实例} target
+ * @param {_data} sourceKey
+ * @param {data中的key值} key
+ */
 export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter () {
+    console.log(this[sourceKey][key], 'this=====>', this, target)
+    debugger
     return this[sourceKey][key]
   }
   sharedPropertyDefinition.set = function proxySetter (val) {
+    debugger
     this[sourceKey][key] = val
   }
-  Object.defineProperty(target, key, sharedPropertyDefinition)
+  // debugger
+  // console.log('this=====>', this, sourceKey, target)
+  /**
+   * Object.defineProperty(target, key, {
+   *  enumerable: true,
+   *  configurable: true,
+   *  get: proxyGetter () { return this[sourceKey][key] }, this指向Proxy函数，this可以访问vm上属性及方法
+   *  set: function proxySetter (val) { return this[sourceKey][key] = val }
+   * })
+   *  */
+  Object.defineProperty(target, key, sharedPropertyDefinition) // 往Vue对象上添加新的属性并且(就是将_data中的属性添加到Vue对象上),并且修改&获取中的会触发set get方法
 }
 
 export function initState (vm: Component) {
   vm._watchers = []
   const opts = vm.$options
+  // debugger
   if (opts.props) initProps(vm, opts.props)
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
@@ -62,6 +81,7 @@ export function initState (vm: Component) {
 }
 
 function initProps (vm: Component, propsOptions: Object) {
+  debugger
   const propsData = vm.$options.propsData || {}
   const props = vm._props = {}
   // cache prop keys so that future props updates can iterate using Array
@@ -110,10 +130,13 @@ function initProps (vm: Component, propsOptions: Object) {
 }
 
 function initData (vm: Component) {
-  let data = vm.$options.data
+  // data() {return {msg: 'hellp Vue'}}
+  let data = vm.$options.data // 是一个function函数
+  console.log(data, 'datadatadatadatadatadatadatadata==>')
+
   data = vm._data = typeof data === 'function'
-    ? getData(data, vm)
-    : data || {}
+    ? getData(data, vm) // 执行了.call() 获取到data中的返回值 -> {msg: 'hellp Vue'}
+    : data || {} // 在vm添加_data对象，给对象是data函数的返回值
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -122,14 +145,20 @@ function initData (vm: Component) {
       vm
     )
   }
+  /**
+   * 将对象的key值转成数组
+   * 例如:
+   *  Object.keys(data) -> ['msg']
+   */
   // proxy data on instance
   const keys = Object.keys(data)
-  const props = vm.$options.props
-  const methods = vm.$options.methods
-  let i = keys.length
+  const props = vm.$options.props // undefined
+  const methods = vm.$options.methods // undefined
+  let i = keys.length // 获取数组长度
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
+      // 判断 methods这个对象上含有这个key值。
       if (methods && hasOwn(methods, key)) {
         warn(
           `Method "${key}" has already been defined as a data property.`,
@@ -137,30 +166,35 @@ function initData (vm: Component) {
         )
       }
     }
+    // 判断 props这个对象上含有这个data值
     if (props && hasOwn(props, key)) {
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${key}" is already declared as a prop. ` +
         `Use prop default value instead.`,
         vm
       )
-    } else if (!isReserved(key)) {
-      proxy(vm, `_data`, key)
+    // 以上两个判断，主要作用是防止methods和props与data重复声明，发生重复声明Vue会警告。
+    } else if (!isReserved(key)) { // 防止变量名称命名成$开头或者_开头,与Vue上的实例方法和属性冲突。
+      proxy(vm, `_data`, key) // 代理
     }
   }
+  console.log(data, 'datadatadata')
+  debugger
   // observe data
   observe(data, true /* asRootData */)
 }
 
 export function getData (data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
-  pushTarget()
+  pushTarget() // Help 这个块没有看懂
   try {
+    debugger
     return data.call(vm, vm)
   } catch (e) {
     handleError(e, vm, `data()`)
     return {}
   } finally {
-    popTarget()
+    popTarget() // Help 这个块没有看懂
   }
 }
 

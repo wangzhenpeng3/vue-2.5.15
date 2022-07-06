@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>new Vue(opetions) 源码解读</title>
+</head>
+<body>
+  <div id="app">
+    {{ msg }}
+    <comp></comp>
+  </div>
+  <script src="../../dist/vue.js"></script>
+  <script>
+    // debugger
+    // Vue.component('comp', {
+    //   template: '<div>I component</div>'
+    // })
+    // Vue.mi
+    new Vue({
+      el: '#app',
+      data: {
+        msg: 'hello vue'
+      }
+    })
+  </script>
+</body>
+</html>
