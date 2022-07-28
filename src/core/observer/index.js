@@ -51,6 +51,7 @@ export class Observer {
      * _ob_能访问Observer所有属性及方法,并且_ob_是不能被枚举的.
      */
     def(value, '__ob__', this)
+    // 开启数组响应式
     if (Array.isArray(value)) {
       const augment = hasProto
         ? protoAugment
@@ -58,6 +59,7 @@ export class Observer {
       augment(value, arrayMethods, arrayKeys)
       this.observeArray(value)
     } else {
+    // 开启对象响应式
       this.walk(value)
     }
   }
@@ -159,7 +161,7 @@ export function defineReactive (
   }
   const setter = property && property.set
 
-  let childOb = !shallow && observe(val) // 处理data中的属性值为object，在次执行observe
+  let childOb = !shallow && observe(val) // 处理data中的属性值为object，再次执行observe 递归
   Object.defineProperty(obj, key, { // Help 没看懂
     enumerable: true,
     configurable: true,

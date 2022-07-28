@@ -5,7 +5,6 @@
  */
 export function isReserved (str: string): boolean {
   const c = (str + '').charCodeAt(0)
-  debugger
   return c === 0x24 || c === 0x5F
 }
 
@@ -19,8 +18,8 @@ export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
     writable: true,
     configurable: true
   })
-  console.log(obj, '===>')
-  debugger
+  // console.log(obj, '===>')
+  // debugger
 }
 
 /**

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>new Vue(opetions) 源码解读</title>
+</head>
+<body>
+  <div id="app">
+    {{ msg }}
+    {{msgComputed}}
+    {{msgComputed}}
+    {{getMsg()}}
+    {{getMsg()}}
+    <!-- <comp></comp> -->
+  </div>
+  <script src="../../dist/vue.js"></script>
+  <script>
+    // debugger
+    // Vue.component('comp', {
+    //   template: '<div>I component</div>'
+    // })
+    // Vue.mi
+    new Vue({
+      el: '#app',
+      data: {
+        msg: 'hello vue'
+      },
+      computed: {
+        msgComputed: function () {
+          console.log(`------computed------`)
+          return this.msg
+        }
+      },
+      methods: {
+        getMsg: function () {
+          console.log(`*******${this.msg}*****`)
+        }
+      }
+    })
+  </script>
+</body>
+</html>
